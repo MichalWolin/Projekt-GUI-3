@@ -1,19 +1,19 @@
 package logic;
 
-public class VBD implements Runnable{
+import interfaces.VBDListener;
+
+public class VBD implements Runnable, VBDListener {
+    private SenderLogic senderLogic;
     private String message;
     private int vbdNumber;
     private int frequency;
     private boolean isRunning;
     private boolean isStopped;
-    public VBD(int vbdNumber){
+    public VBD(SenderLogic senderLogic, int vbdNumber){
+        this.senderLogic = senderLogic;
         this.vbdNumber = vbdNumber;
         this.isStopped = false;
         this.isRunning = true;
-    }
-
-    public int getVbdNumber() {
-        return vbdNumber;
     }
 
     @Override
@@ -43,38 +43,52 @@ public class VBD implements Runnable{
         }
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
     }
 
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
 
-    public void suspendVBD(){
-        this.isRunning = false;
+    @Override
+    public int getFrequency() {
+        return frequency;
     }
 
-    public void resumeVBD(){
+    @Override
+    public int getVBDNumber() {
+        return vbdNumber;
+    }
+
+    @Override
+    public boolean getIsRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public void resume() {
         synchronized (this) {
             this.isRunning = true;
             this.notify();
         }
     }
 
-    public void stopVBD(){
+    @Override
+    public void suspend(){
+        this.isRunning = false;
+    }
+
+    @Override
+    public void remove() {
         this.isStopped = true;
-    }
-
-    public int getFrequency() {
-        return frequency;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public String getMessage(){
-        return message;
+        senderLogic.removeVBD(this);
     }
 }

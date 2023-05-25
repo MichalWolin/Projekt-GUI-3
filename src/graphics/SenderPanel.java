@@ -1,6 +1,6 @@
 package graphics;
 
-import interfaces.VBDListener;
+import interfaces.VBDPanelListener;
 import logic.VBD;
 
 import javax.swing.*;
@@ -8,9 +8,9 @@ import java.awt.*;
 import java.util.List;
 
 public class SenderPanel extends JPanel{
-    private VBDListener listener;
+    private VBDPanelListener listener;
     private JPanel container;
-    public void setListener(VBDListener listener) {
+    public void setListener(VBDPanelListener listener) {
         this.listener = listener;
     }
 
@@ -44,7 +44,10 @@ public class SenderPanel extends JPanel{
             container.removeAll();
             List<VBD> vbdList = listener.getVBDs();
             for(VBD vbd : vbdList){
-                container.add(new VBDGraphics(this, vbd));
+                VBDGraphics vbdGraphics = new VBDGraphics(this);
+                vbdGraphics.setListener(vbd);
+                vbdGraphics.paintVBD();
+                container.add(vbdGraphics);
                 new Thread(vbd).start();
             }
             container.revalidate();
@@ -52,9 +55,8 @@ public class SenderPanel extends JPanel{
         }
     }
 
-    public void removeVBD(VBDGraphics vbdg, VBD vbd){
+    public void removeVBD(VBDGraphics vbdg){
         if(listener != null){
-            listener.removeVBD(vbd);
             container.remove(vbdg);
             container.revalidate();
             container.repaint();
