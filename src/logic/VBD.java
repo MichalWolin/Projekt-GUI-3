@@ -34,13 +34,19 @@ public class VBD implements Runnable, VBDListener {
                 Thread.sleep((long)msgFrequency * 1000);
                 synchronized (this) {
                     if (isRunning && !isStopped) {
-                        System.out.println("wyslalem wiadomosc " + msgFrequency);
+                        senderLogic.passPDU(new PDU(message));
+                        System.out.println("wyslalem");
                     }
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override
+    public void myStart() {
+        new Thread(this).start();
     }
 
     @Override

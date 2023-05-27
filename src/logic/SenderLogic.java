@@ -8,9 +8,12 @@ import java.util.List;
 public class SenderLogic implements VBDPanelListener {
     private List<VBD> vbdList;
     private int vbdNumber;
-    public SenderLogic(){
+    private LayerLogic layerLogic;
+
+    public SenderLogic(LayerLogic layerLogic){
         this.vbdNumber = 1_000_000;
         vbdList = new ArrayList<>();
+        this.layerLogic = layerLogic;
     }
 
     @Override
@@ -27,5 +30,10 @@ public class SenderLogic implements VBDPanelListener {
 
     public void removeVBD(VBD vbd) {
         vbdList.remove(vbd);
+    }
+
+    public void passPDU(PDU pdu){
+        layerLogic.queuePDU(pdu);
+
     }
 }

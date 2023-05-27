@@ -1,6 +1,8 @@
 package graphics;
 
 import interfaces.VBDPanelListener;
+import logic.LayerLogic;
+import logic.SenderLogic;
 import logic.VBD;
 
 import javax.swing.*;
@@ -48,7 +50,6 @@ public class SenderPanel extends JPanel{
                 vbdGraphics.setListener(vbd);
                 vbdGraphics.paintVBD();
                 container.add(vbdGraphics);
-                new Thread(vbd).start();
             }
             container.revalidate();
             container.repaint();

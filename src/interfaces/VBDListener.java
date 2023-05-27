@@ -1,6 +1,7 @@
 package interfaces;
 
 public interface VBDListener {
+    void myStart();
     void setMessage(String message);
     String getMessage();
     void setFrequency(int frequency);
