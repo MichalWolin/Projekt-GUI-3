@@ -3,31 +3,30 @@ package logic;
 import interfaces.LayerListener;
 import interfaces.UpdateListener;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.List;
 
 public class LayerLogic implements LayerListener {
     private UpdateListener listener;
     private HashSet<LeftBTS> leftBTSSet;
     private HashSet<RightBTS> rightBTSSet;
-    private int BTSNumber;
-
-
-
-    public LayerLogic(){
-        BTSNumber = 1000;
+    private List<BSCLayer> bscLayerList;
+    private ReceiverLogic receiverLogic;
+    private int number;
+    public LayerLogic(ReceiverLogic receiverLogic){
+        this.receiverLogic = receiverLogic;
+        number = 1000;
         leftBTSSet = new HashSet<>();
         rightBTSSet = new HashSet<>();
+        bscLayerList = new ArrayList<>();
     }
     public void setListener(UpdateListener listener){
         this.listener = listener;
         addLeftBTS();
         addRightBTS();
-    }
-    @Override
-    public void addBCSLayer() {
-
+        addBSCLayer();
     }
 
     @Override
@@ -40,6 +39,25 @@ public class LayerLogic implements LayerListener {
         return rightBTSSet;
     }
 
+    @Override
+    public void addBSCLayer() {
+        bscLayerList.add(new BSCLayer(this));
+        update();
+    }
+
+    @Override
+    public void removeBSCLayer() {
+        if(bscLayerList.size() > 1){
+            bscLayerList.remove(bscLayerList.size() - 1);
+        }
+        update();
+    }
+
+    @Override
+    public List<BSCLayer> getBSC() {
+        return bscLayerList;
+    }
+
     public void queuePDU(PDU pdu){
         if(leftBTSSet.stream().allMatch(bts -> bts.getAwaitingPDUs() > 5)){
             addLeftBTS();
@@ -49,19 +67,48 @@ public class LayerLogic implements LayerListener {
                 Comparator.comparingInt(LeftBTS::getAwaitingPDUs)).orElse(null);
         if(bts != null){
             bts.queuePDU(pdu);
-            listener.update();
         }
     }
 
+    public void receivePDU(PDU pdu){
+        bscLayerList.get(0).receivePDU(pdu);
+    }
+
+    public void passPDU(BSCLayer current, PDU pdu){
+        int curr = bscLayerList.indexOf(current);
+        if(curr >= 0 && curr < bscLayerList.size() - 1){
+            BSCLayer next = bscLayerList.get(curr + 1);
+            next.receivePDU(pdu);
+        }else{
+            passToBTS(pdu);
+        }
+    }
+
+    public void passToBTS(PDU pdu){
+        if(rightBTSSet.stream().allMatch(bts -> bts.getAwaitingPDUs() > 5)){
+            addRightBTS();
+        }
+
+        RightBTS bts = rightBTSSet.stream().min(
+                Comparator.comparingInt(RightBTS::getAwaitingPDUs)).orElse(null);
+        if(bts != null){
+            bts.queuePDU(pdu);
+        }
+    }
+
+    public void passToVRD(PDU pdu){
+        receiverLogic.receivePDU();
+    }
+
     public void addLeftBTS(){
-        BTSNumber += (int)(Math.random()*1000);
-        this.leftBTSSet.add(new LeftBTS(this, BTSNumber));
+        number += (int)(Math.random()*10);
+        this.leftBTSSet.add(new LeftBTS(this, number));
         update();
     }
 
     public void addRightBTS(){
-        BTSNumber += (int)(Math.random()*1000);
-        this.rightBTSSet.add(new RightBTS(BTSNumber));
+        number += (int)(Math.random()*10);
+        this.rightBTSSet.add(new RightBTS(this, number));
         update();
     }
 
@@ -69,5 +116,13 @@ public class LayerLogic implements LayerListener {
         if(listener != null){
             listener.update();
         }
+    }
+
+    public int getNumber(){
+        return number;
+    }
+
+    public void setNumber(int number){
+        this.number = number;
     }
 }

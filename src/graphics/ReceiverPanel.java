@@ -1,16 +1,19 @@
 package graphics;
 
+import interfaces.UpdateListener;
 import interfaces.VBDPanelListener;
-import logic.VBD;
+import interfaces.VRDPanelListener;
+import logic.VRD;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class SenderPanel extends JPanel{
-    private VBDPanelListener listener;
+public class ReceiverPanel extends JPanel implements UpdateListener {
+    private VRDPanelListener listener;
     private JPanel container;
-    public void setListener(VBDPanelListener listener) {
+
+    public void setListener(VRDPanelListener listener){
         this.listener = listener;
     }
 
@@ -25,38 +28,39 @@ public class SenderPanel extends JPanel{
             scrollPane.setViewportView(container);
 
             JButton addVBDButton = new JButton("ADD");
-            addVBDButton.addActionListener(e -> addVBD());
+            addVBDButton.addActionListener(e -> addVRD());
 
             this.add(scrollPane, BorderLayout.CENTER);
             this.add(addVBDButton, BorderLayout.PAGE_END);
         }
     }
 
-    public void addVBD(){
+    private void addVRD() {
         if(listener != null){
-            listener.addVBD();
+            listener.addVRD();
             update();
         }
     }
 
+    @Override
     public void update(){
         if(listener != null){
             container.removeAll();
-            List<VBD> vbdList = listener.getVBDs();
-            for(VBD vbd : vbdList){
-                VBDGraphics vbdGraphics = new VBDGraphics(this);
-                vbdGraphics.setListener(vbd);
-                vbdGraphics.paintVBD();
-                container.add(vbdGraphics);
+            List<VRD> vrdList = listener.getVRDs();
+            for(VRD vrd : vrdList){
+                VRDGraphics vrdGraphics = new VRDGraphics(this);
+                vrdGraphics.setListener(vrd);
+                vrdGraphics.paintVRD();
+                container.add(vrdGraphics);
             }
             container.revalidate();
             container.repaint();
         }
     }
 
-    public void removeVBD(VBDGraphics vbdg){
+    public void remove(VRDGraphics vrdg){
         if(listener != null){
-            container.remove(vbdg);
+            container.remove(vrdg);
             container.revalidate();
             container.repaint();
         }

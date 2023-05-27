@@ -14,6 +14,7 @@ public class LayerPanel extends JPanel implements UpdateListener {
     private LayerListener listener;
     private LeftBTSPanel leftBTSPanel;
     private RightBTSPanel rightBTSPanel;
+    private BSCLayerPanel bscLayerPanel;
     private class LeftBTSPanel extends BTSPanel{
         private JPanel leftContainer;
         @Override
@@ -27,6 +28,8 @@ public class LayerPanel extends JPanel implements UpdateListener {
                     btsGraphics.paintBTS();
                     leftContainer.add(btsGraphics);
                 }
+                leftContainer.revalidate();
+                leftContainer.repaint();
             }
         }
 
@@ -49,6 +52,8 @@ public class LayerPanel extends JPanel implements UpdateListener {
                     btsGraphics.paintBTS();
                     rightContainer.add(btsGraphics);
                 }
+                rightContainer.revalidate();
+                rightContainer.repaint();
             }
         }
 
@@ -75,7 +80,12 @@ public class LayerPanel extends JPanel implements UpdateListener {
             rightBTSPanel.setListener(listener);
             rightBTSPanel.paintPanel();
 
+            bscLayerPanel = new BSCLayerPanel();
+            bscLayerPanel.setListener(listener);
+            bscLayerPanel.paintPanel();
+
             this.add(leftBTSPanel, BorderLayout.WEST);
+            this.add(bscLayerPanel, BorderLayout.CENTER);
             this.add(rightBTSPanel, BorderLayout.EAST);
         }
     }
@@ -84,5 +94,6 @@ public class LayerPanel extends JPanel implements UpdateListener {
     public void update() {
         leftBTSPanel.update();
         rightBTSPanel.update();
+        bscLayerPanel.update();
     }
 }

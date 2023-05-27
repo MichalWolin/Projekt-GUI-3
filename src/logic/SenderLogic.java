@@ -11,7 +11,7 @@ public class SenderLogic implements VBDPanelListener {
     private LayerLogic layerLogic;
 
     public SenderLogic(LayerLogic layerLogic){
-        this.vbdNumber = 1_000_000;
+        this.vbdNumber = 100_000_000;
         vbdList = new ArrayList<>();
         this.layerLogic = layerLogic;
     }
@@ -20,6 +20,7 @@ public class SenderLogic implements VBDPanelListener {
     public void addVBD() {
         vbdNumber += (int)(Math.random()*1000);
         VBD vbd = new VBD(this, vbdNumber);
+        vbd.myStart();
         vbdList.add(vbd);
     }
 
@@ -34,6 +35,5 @@ public class SenderLogic implements VBDPanelListener {
 
     public void passPDU(PDU pdu){
         layerLogic.queuePDU(pdu);
-
     }
 }

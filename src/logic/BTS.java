@@ -10,7 +10,7 @@ public abstract class BTS implements StationListener {
         this.BTSNumber = BTSNumber;
     }
     @Override
-    public int getBTSNumber() {
+    public int getNumber() {
         return BTSNumber;
     }
 

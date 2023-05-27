@@ -72,8 +72,6 @@ public class VBDGraphics extends JPanel {
             });
             stateBox.setMaximumSize(preferredSize);
             this.add(stateBox);
-
-            listener.myStart();
         }
     }
 

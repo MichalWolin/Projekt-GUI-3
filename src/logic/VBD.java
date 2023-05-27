@@ -10,6 +10,7 @@ public class VBD implements Runnable, VBDListener {
     private boolean isRunning;
     private boolean isStopped;
     public VBD(SenderLogic senderLogic, int vbdNumber){
+        this.frequency = 5;
         this.senderLogic = senderLogic;
         this.vbdNumber = vbdNumber;
         this.isStopped = false;
@@ -19,7 +20,7 @@ public class VBD implements Runnable, VBDListener {
     @Override
     public void run() {
         while(!isStopped){
-            synchronized (this) {
+            synchronized (senderLogic) {
                 while (!isRunning) {
                     try {
                         wait();
@@ -35,7 +36,6 @@ public class VBD implements Runnable, VBDListener {
                 synchronized (this) {
                     if (isRunning && !isStopped) {
                         senderLogic.passPDU(new PDU(message));
-                        System.out.println("wyslalem");
                     }
                 }
             } catch (InterruptedException e) {

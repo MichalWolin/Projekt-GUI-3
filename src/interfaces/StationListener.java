@@ -1,7 +1,7 @@
 package interfaces;
 
 public interface StationListener {
-    int getBTSNumber();
+    int getNumber();
     int getProcessedPDUs();
     int getAwaitingPDUs();
 }
