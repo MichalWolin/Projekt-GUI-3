@@ -11,7 +11,6 @@ public class RightBTS extends BTS implements Runnable{
         this.layerLogic = layerLogic;
         queue = new LinkedBlockingQueue<>();
         processedPDUs = 0;
-        new Thread(this).start();
     }
     @Override
     public void run() {

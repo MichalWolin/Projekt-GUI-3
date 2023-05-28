@@ -9,12 +9,14 @@ public class VBD implements Runnable, VBDListener {
     private int frequency;
     private boolean isRunning;
     private boolean isStopped;
+    private int sent;
     public VBD(SenderLogic senderLogic, int vbdNumber){
         this.frequency = 5;
         this.senderLogic = senderLogic;
         this.vbdNumber = vbdNumber;
         this.isStopped = false;
         this.isRunning = true;
+        this.sent = 0;
     }
 
     @Override
@@ -35,7 +37,8 @@ public class VBD implements Runnable, VBDListener {
                 Thread.sleep((long)msgFrequency * 1000);
                 synchronized (this) {
                     if (isRunning && !isStopped) {
-                        senderLogic.passPDU(new PDU(message));
+                        senderLogic.passPDU(new PDU(message, vbdNumber, senderLogic.getReceiver()));
+                        sent++;
                     }
                 }
             } catch (InterruptedException e) {
@@ -96,5 +99,9 @@ public class VBD implements Runnable, VBDListener {
     public void remove() {
         this.isStopped = true;
         senderLogic.removeVBD(this);
+    }
+
+    public int getSent(){
+        return sent;
     }
 }

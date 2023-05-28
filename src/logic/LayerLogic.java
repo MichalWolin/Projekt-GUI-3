@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class LayerLogic implements LayerListener {
     private UpdateListener listener;
@@ -48,6 +49,14 @@ public class LayerLogic implements LayerListener {
     @Override
     public void removeBSCLayer() {
         if(bscLayerList.size() > 1){
+            HashSet<BSC> list = bscLayerList.get(bscLayerList.size() - 1).getBSCSet();
+            for(BSC bsc : list){
+                bsc.myStop();
+                LinkedBlockingQueue<PDU> queue = bsc.getQueue();
+                for(PDU pdu : queue){
+                    passToBTS(pdu);
+                }
+            }
             bscLayerList.remove(bscLayerList.size() - 1);
         }
         update();
@@ -97,19 +106,21 @@ public class LayerLogic implements LayerListener {
     }
 
     public void passToVRD(PDU pdu){
-        receiverLogic.receivePDU();
+        receiverLogic.receivePDU(pdu);
     }
 
     public void addLeftBTS(){
         number += (int)(Math.random()*10);
-        this.leftBTSSet.add(new LeftBTS(this, number));
-        update();
+        LeftBTS leftBTS = new LeftBTS(this, number);
+        this.leftBTSSet.add(leftBTS);
+        new Thread(leftBTS).start();
     }
 
     public void addRightBTS(){
         number += (int)(Math.random()*10);
-        this.rightBTSSet.add(new RightBTS(this, number));
-        update();
+        RightBTS rightBTS = new RightBTS(this, number);
+        this.rightBTSSet.add(rightBTS);
+        new Thread(rightBTS).start();
     }
 
     public void update(){

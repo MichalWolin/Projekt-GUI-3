@@ -9,12 +9,13 @@ public class BSC implements StationListener, Runnable {
     private int BSCNumber;
     private int processedPDUs;
     private BSCLayer bscLayer;
+    private boolean isRunning;
     public BSC(BSCLayer bscLayer, int BSCNumber){
         this.bscLayer = bscLayer;
         this.BSCNumber = BSCNumber;
+        this.isRunning = true;
         queue = new LinkedBlockingQueue<>();
         processedPDUs = 0;
-        new Thread(this).start();
     }
     @Override
     public int getNumber() {
@@ -33,7 +34,7 @@ public class BSC implements StationListener, Runnable {
 
     @Override
     public void run() {
-        while(true){
+        while(isRunning){
             synchronized (queue){
                 try {
                     PDU pdu = queue.take();
@@ -51,5 +52,13 @@ public class BSC implements StationListener, Runnable {
     public void receivePDU(PDU pdu) {
         queue.add(pdu);
         bscLayer.update();
+    }
+
+    public void myStop(){
+        isRunning = false;
+    }
+
+    public LinkedBlockingQueue<PDU> getQueue(){
+        return queue;
     }
 }

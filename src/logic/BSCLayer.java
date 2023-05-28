@@ -17,6 +17,7 @@ public class BSCLayer {
     public void addBSC(){
         layerLogic.setNumber(layerLogic.getNumber() + (int)(Math.random() * 10));
         BSC bsc = new BSC(this, layerLogic.getNumber());
+        new Thread(bsc).start();
         bscSet.add(bsc);
         layerLogic.update();
     }
